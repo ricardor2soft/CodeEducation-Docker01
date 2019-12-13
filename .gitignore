@@ -3,6 +3,8 @@
 /public/storage
 /storage/*.key
 /vendor
+/data_myql
+/data_postgres
 /.idea
 /.vagrant
 Homestead.json

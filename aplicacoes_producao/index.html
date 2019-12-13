@@ -1,0 +1,46 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+function dispararAlerta() {
+		var jqxhr = $.ajax( {
+		    type: 'POST',
+		    url:"https://www.r2soft.com.br/",
+		    dataType:'json'
+		})
+		    .done(function(data) {
+		        // console.log(data);
+		        // alert(msg);
+		    })
+		    .success(function(data) {
+		        console.log(data);
+		    })
+
+				.fail(function(data) {
+		        console.log(data);
+		    })
+		    .always(function(data) {
+		        // console.log(data);
+		        // alert( "complete" );
+		    });
+	}
+dispararAlerta();	
+</script>
+</head>
+<body>
+	<ul id="menu">
+		<li><a href="home.html">Home</a></li>
+		<li><a href="cadastro.html">Cadastro</a></li>
+		<li><a href="contato.html">Contato</a></li>
+	</ul><!-- /menu -->
+	<div id="sidebar">
+		
+	</div><!-- /sidebar -->
+	<div id="content">
+		
+	</div><!-- /content -->
+	<div id="other">
+		
+	</div><!-- /other -->
+</body>
+</html>

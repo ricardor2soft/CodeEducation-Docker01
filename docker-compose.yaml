@@ -1,13 +1,26 @@
 version: '3'
 
 services:
+#  apache:
+#    image: httpd:2.4
+#    ports:
+#     - "80:80"
+#    command: ""
+#    volumes:
+#      - "./aplicacoes_producao/:/usr/local/apache2/htdocs/"
+#      - "./config_apache/apache.conf:/usr/local/apache2/conf/httpd.conf"
+#    container_name: "apache"
+#    depends_on:
+#      - app
   app:
     build: .
     container_name: app
     volumes:
       - .:/var/www
+    networks:
+      - app-networks
     depends_on:
-      - nginx
+      - mysql
       - redis
   nginx:
     build: .docker/nginx
@@ -18,16 +31,81 @@ services:
       - "8000:80"
     volumes:
       - .:/var/www
+    networks:
+      - app-networks
+    depends_on:
+      - app
+
   redis:
+    container_name: redis
     image: redis:alpine
     expose:
       - 6379
-  db:
-    image: mysql:5.6
+    networks:
+      - app-networks
+  mysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: mysql
+    restart: always
+    tty: true
     ports:
-      - "3306:3306"
+      - "33006:3306"
     volumes:
       - ./data_myql:/var/lib/mysql
+    networks:
+      - app-networks
     environment:
+      - MYSQL_DATABASE=laravel
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=root
+  mysqladm:
+    container_name: PhpMyAdmin
+    image: phpmyadmin/phpmyadmin:latest
+    links:
+      - mysql
+    ports:
+      - 8001:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - app-networks
+
+  postgres:
+    image: postgres:9.1
+    build: .docker/postgres
+    container_name: postgres
+    restart: always
+    tty: true
+    environment:
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=r2147258369
+    ports:
+      - 54321:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - app-networks
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#    - 8080:8080
+#    networks:
+#    - app-networks
+  pgAdmin:
+    image: dpage/pgadmin4
+    container_name: PgAdmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "r2soft@r2soft.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "r2147258369"
+    ports:
+      - "8002:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-networks
+networks:
+  app-networks:
+    driver: bridge
