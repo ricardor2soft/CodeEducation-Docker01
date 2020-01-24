@@ -1,19 +1,9 @@
 version: '3'
 
 services:
-#  apache:
-#    image: httpd:2.4
-#    ports:
-#     - "80:80"
-#    command: ""
-#    volumes:
-#      - "./aplicacoes_producao/:/usr/local/apache2/htdocs/"
-#      - "./config_apache/apache.conf:/usr/local/apache2/conf/httpd.conf"
-#    container_name: "apache"
-#    depends_on:
-#      - app
   app:
-    build: .
+    build: .docker/laravel
+    entrypoint: dockerize -wait tcp://mysql:3306 -timeout 40s .docker/entrypoint.sh
     container_name: app
     volumes:
       - .:/var/www
@@ -59,53 +49,8 @@ services:
       - MYSQL_DATABASE=laravel
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=root
-  mysqladm:
-    container_name: PhpMyAdmin
-    image: phpmyadmin/phpmyadmin:latest
-    links:
-      - mysql
-    ports:
-      - 8001:80
-    environment:
-      - PMA_ARBITRARY=1
-    networks:
-      - app-networks
 
-  postgres:
-    image: postgres:9.1
-    build: .docker/postgres
-    container_name: postgres
-    restart: always
-    tty: true
-    environment:
-      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=r2147258369
-    ports:
-      - 54321:5432
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    networks:
-      - app-networks
-#  adminer:
-#    image: adminer
-#    restart: always
-#    ports:
-#    - 8080:8080
-#    networks:
-#    - app-networks
-  pgAdmin:
-    image: dpage/pgadmin4
-    container_name: PgAdmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "r2soft@r2soft.com.br"
-      PGADMIN_DEFAULT_PASSWORD: "r2147258369"
-    ports:
-      - "8002:80"
-    depends_on:
-      - postgres
-    networks:
-      - app-networks
+
 networks:
   app-networks:
     driver: bridge
