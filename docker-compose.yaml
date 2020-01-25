@@ -1,10 +1,12 @@
 version: '3'
 
 services:
-<<<<<<< HEAD
   app:
     build: .docker/laravel
-    entrypoint: dockerize -wait tcp://mysql:3306 -timeout 40s .docker/entrypoint.sh
+    entrypoint: dockerize --template ./.docker/nginx.conf:./.docker/nginx/nginx.conf -wait tcp://mysql:3306 -timeout 40s ./.docker/entrypoint.sh
+    environment:
+      PORT: 9000
+      HOST: app
     container_name: app
     volumes:
       - .:/var/www
@@ -26,7 +28,6 @@ services:
       - app-networks
     depends_on:
       - app
-
   redis:
     container_name: redis
     image: redis:alpine
@@ -50,118 +51,6 @@ services:
       - MYSQL_DATABASE=laravel
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=root
-
-
-=======
-
-  #  apache:
-#    image: httpd:2.4
-#    ports:
-#     - "80:80"
-#    command: ""
-#    volumes:
-#      - "./aplicacoes_producao/:/usr/local/apache2/htdocs/"
-#      - "./config_apache/apache.conf:/usr/local/apache2/conf/httpd.conf"
-#    container_name: "apache"
-#    depends_on:
-#      - app
-#  app:
-#    build: .
-#    container_name: app
-#    volumes:
-#      - .:/var/www
-#    networks:
-#      - app-networks
-#    depends_on:
-#      - mysql
-#      - redis
-#  nginx:
-#    build: .docker/nginx
-#    container_name: nginx
-#    restart: always
-#    tty: true
-#    ports:
-#      - "8000:80"
-#    volumes:
-#      - .:/var/www
-#    networks:
-#      - app-networks
-#    depends_on:
-#      - app
-#
-#  redis:
-#    container_name: redis
-#    image: redis:alpine
-#    expose:
-#      - 6379
-#    networks:
-#      - app-networks
-#  mysql:
-#    image: mysql:5.7
-#    command: --innodb-use-native-aio=0
-#    container_name: mysql
-#    restart: always
-#    tty: true
-#    ports:
-#      - "33006:3306"
-#    volumes:
-#      - ./data_myql:/var/lib/mysql
-#    networks:
-#      - app-networks
-#    environment:
-#      - MYSQL_DATABASE=laravel
-#      - MYSQL_ROOT_PASSWORD=root
-#      - MYSQL_DATABASE=root
-#  mysqladm:
-#    container_name: PhpMyAdmin
-#    image: phpmyadmin/phpmyadmin:latest
-#    links:
-#      - mysql
-#    ports:
-#      - 8001:80
-#    environment:
-#      - PMA_ARBITRARY=1
-#    networks:
-#      - app-networks
-
-  postgres:
-#    image: postgres:9.1
-    build: .docker/postgres
-    container_name: postgres
-    restart: always
-    tty: true
-    environment:
-#      - PGDATA=/var/lib/postgresql/data
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=r2147258369
-    ports:
-      - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - app-networks
-#  adminer:
-#    image: adminer
-#    restart: always
-#    ports:
-#    - 8080:8080
-#    networks:
-#    - app-networks
-#  pgAdmin:
-#    image: dpage/pgadmin4
-#    container_name: PgAdmin
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: "r2soft@r2soft.com.br"
-#      PGADMIN_DEFAULT_PASSWORD: "r2147258369"
-#    ports:
-#      - "8002:80"
-#    depends_on:
-#      - postgres
-#    networks:
-#      - app-networks
-volumes:
-  pgdata:
->>>>>>> b2f7821aa07aa2b578ee46fd60f1f5eed47d537f
 networks:
   app-networks:
     driver: bridge

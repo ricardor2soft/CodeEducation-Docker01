@@ -6,6 +6,7 @@
 /data_myql
 /data_postgres
 /.idea
+/pgdata
 /.vagrant
 Homestead.json
 Homestead.yaml
